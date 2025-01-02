@@ -162,6 +162,8 @@ vim.opt.scrolloff = 10
 -- Oil.nvim open Oil file manager
 vim.keymap.set('n', '<Leader>o', ':Oil<CR>', { desc = "Open oil in Neovim's current working directory" })
 
+vim.keymap.set('n', 'gx', '<esc>:URLOpenUnderCursor<CR>', { desc = 'Replace netrw gx' })
+
 -- Clear highlights on search when pressing <Esc> in normal mode
 --  See `:help hlsearch`
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
@@ -742,12 +744,12 @@ require('lazy').setup({
           -- `friendly-snippets` contains a variety of premade snippets.
           --    See the README about individual language/framework/plugin snippets:
           --    https://github.com/rafamadriz/friendly-snippets
-          -- {
-          --   'rafamadriz/friendly-snippets',
-          --   config = function()
-          --     require('luasnip.loaders.from_vscode').lazy_load()
-          --   end,
-          -- },
+          {
+            'rafamadriz/friendly-snippets',
+            config = function()
+              require('luasnip.loaders.from_vscode').lazy_load()
+            end,
+          },
         },
       },
       'saadparwaiz1/cmp_luasnip',
@@ -950,6 +952,13 @@ require('lazy').setup({
     opts = {},
     -- Optional dependencies
     dependencies = { 'nvim-tree/nvim-web-devicons' }, -- use if prefer nvim-web-devicons
+    config = function()
+      require('oil').setup {
+        default_file_explorer = true,
+        delete_to_trash = true,
+        view_options = { show_hidden = true },
+      }
+    end,
   },
 
   {
@@ -972,6 +981,19 @@ require('lazy').setup({
   },
   'tpope/vim-fugitive',
 
+  -- lazy.nvim
+  {
+    'sontungexpt/url-open',
+    event = 'VeryLazy',
+    cmd = 'URLOpenUnderCursor',
+    config = function()
+      local status_ok, url_open = pcall(require, 'url-open')
+      if not status_ok then
+        return
+      end
+      url_open.setup {}
+    end,
+  },
   -- For additional information with loading, sourcing and examples see `:help lazy.nvim-🔌-plugin-spec`
   -- Or use telescope!
   -- In normal mode type `<space>sh` then write `lazy.nvim-plugin`
